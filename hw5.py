@@ -1,6 +1,6 @@
 import stocks
 import numpy
-
+import matplotlib.pyplot as plt 
 # 1
 # Calculates and prints out the correlation between each combination of the 
 # three indices, e.g., between nasdaq and sp500, nasdaq and djia, and sp500 and 
@@ -34,29 +34,32 @@ def correlation(x, y):
         correlation | float:
             The correlation coefficient of two input stock indices.
     """
-    #x_array = numpy.array(x, dtype='f') # make sure input is array
-    #y_array = numpy.array(y, dtype='f')
-    x_tot = 0.0
-    y_tot = 0.0
-    for i in range(len(x)):
-        x_tot += x[i]
-        y_tot += y[i]
-    x_bar = x_tot / len(x)
-    y_bar = y_tot / len(y)
-    covariance = 0.0
-    for i in range(len(x)):
-        covariance += (x[i] - x_bar) * (y[i] - y_bar)
-    x_var = 0.0
-    y_var = 0.0
-    for i in range(len(x)):
-        x_var += (x[i] - x_bar)**2
-        y_var += (y[i] - y_bar)**2
-    x_sig = x_var**(0.5)
-    y_sig = y_var**(0.5)
-    return covariance / (x_sig * y_sig)
+    if len(x) == len(y):
+        x = numpy.array(x, dtype='f') # make sure input is array
+        y = numpy.array(y, dtype='f')
+        x_tot = 0.0
+        y_tot = 0.0
+        for i in range(len(x)):
+            x_tot += x[i]
+            y_tot += y[i]
+        x_bar = x_tot / len(x)
+        y_bar = y_tot / len(y)
+        covariance = 0.0
+        for i in range(len(x)):
+            covariance += (x[i] - x_bar) * (y[i] - y_bar)
+        x_var = 0.0
+        y_var = 0.0
+        for i in range(len(x)):
+            x_var += (x[i] - x_bar)**2
+            y_var += (y[i] - y_bar)**2
+        x_sig = x_var**(0.5)
+        y_sig = y_var**(0.5)
+        return covariance / (x_sig * y_sig)
+    else:
+        raise ValueError, 'Lists must be the same length'
 
 # test with numpy correlate function
-print(numpy.correlate(stocks.nasdaq, stocks.sp500))
+print(numpy.corrcoef(stocks.nasdaq, stocks.sp500)[0,1])
 
 # Print the three correlation between combinations of indices
 # Correlation between Nasdaq and S&P500
@@ -77,11 +80,25 @@ def autocorrelation(x, lag):
     
     This function calculates the lag autocorrelation 
     
-    """    
-    
-    
-    
-    
+    """
+    if lag > len(x):
+        raise ValueError, 'Lag must be less than the length of the input array'    
+    x_array = numpy.array(x, dtype='f')
+    y_array = numpy.array(x, dtype='f')
+    if lag == 0:
+        return correlation(x_array, y_array)
+    else:
+        return correlation(x_array[:-1*lag], x_array[lag:])
+
+# Test
+print(autocorrelation(stocks.nasdaq, 3))
+print(autocorrelation(stocks.sp500, 5))  
+
+# 3
+# Plots each lag autocorrelation out on a single figure. The y-axis of the graph 
+# should be the correlation coefficient and the x-axis should be lag in number 
+# of days. You may use matplotlib functions for this section. 
+   
     
     
     
