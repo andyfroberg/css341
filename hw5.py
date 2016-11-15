@@ -98,9 +98,25 @@ print(autocorrelation(stocks.sp500, 5))
 # Plots each lag autocorrelation out on a single figure. The y-axis of the graph 
 # should be the correlation coefficient and the x-axis should be lag in number 
 # of days. You may use matplotlib functions for this section. 
-   
-    
-    
-    
-    
-    
+plt.figure("Lag Autocorrelation of Stock Indices")
+plt.plot(lag_corr_days, autocorrelation(stocks.nasdaq), 'r-o', 
+    markersize='4', linewidth='3', markeredgecolor='r',
+    label='NASDAQ')
+plt.plot(lag_corr_days, autocorrelation(stocks.sp500), 'g-o',
+    markersize='4', linewidth='3', markeredgecolor='g',
+    label='S&P500')
+plt.plot(lag_corr_days, autocorrelation(stocks.djia), 'b-o',
+    markersize='4', linewidth='3', markeredgecolor='b',
+    label='DJIA')
+plt.xlabel('Lag (Days)')
+plt.ylabel('Correlation Coefficient')
+plt.title("Lag Autocorrelation of Stock Indices")
+plt.legend(loc='lower right')
+plt.savefig('lag_autocorr.png', dpi=300)
+
+# 4
+# Describe what the plot tells you. (You do not have to be "right" about what 
+# the plot says, just not "wrong." That is, if you claim the plot says something 
+# and it says the opposite of that, that's "wrong." If you say the plot says 
+# something and it might say that or might not, that's okay.) I mainly want you 
+# to try and interpret the plot.
