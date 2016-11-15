@@ -98,21 +98,30 @@ print(autocorrelation(stocks.sp500, 5))
 # Plots each lag autocorrelation out on a single figure. The y-axis of the graph 
 # should be the correlation coefficient and the x-axis should be lag in number 
 # of days. You may use matplotlib functions for this section. 
+lag_autocorr_days = range(64)
+nasdaq_autocorr = []
+sp500_autocorr = []
+djia_autocorr = []
+for i in range(len(lag_autocorr_days)):
+    nasdaq_autocorr.append(autocorrelation(stocks.nasdaq, i))
+    sp500_autocorr.append(autocorrelation(stocks.sp500, i))
+    djia_autocorr.append(autocorrelation(stocks.djia, i))
 plt.figure("Lag Autocorrelation of Stock Indices")
-plt.plot(lag_corr_days, autocorrelation(stocks.nasdaq), 'r-o', 
+plt.plot(lag_autocorr_days, nasdaq_autocorr, 'r-o', 
     markersize='4', linewidth='3', markeredgecolor='r',
     label='NASDAQ')
-plt.plot(lag_corr_days, autocorrelation(stocks.sp500), 'g-o',
+plt.plot(lag_autocorr_days, sp500_autocorr, 'g-o',
     markersize='4', linewidth='3', markeredgecolor='g',
     label='S&P500')
-plt.plot(lag_corr_days, autocorrelation(stocks.djia), 'b-o',
+plt.plot(lag_autocorr_days, djia_autocorr, 'b-o',
     markersize='4', linewidth='3', markeredgecolor='b',
     label='DJIA')
 plt.xlabel('Lag (Days)')
 plt.ylabel('Correlation Coefficient')
 plt.title("Lag Autocorrelation of Stock Indices")
-plt.legend(loc='lower right')
+plt.legend(loc='lower left')
 plt.savefig('lag_autocorr.png', dpi=300)
+plt.show()
 
 # 4
 # Describe what the plot tells you. (You do not have to be "right" about what 
@@ -120,3 +129,4 @@ plt.savefig('lag_autocorr.png', dpi=300)
 # and it says the opposite of that, that's "wrong." If you say the plot says 
 # something and it might say that or might not, that's okay.) I mainly want you 
 # to try and interpret the plot.
+
