@@ -1,5 +1,5 @@
-import csv
-import os.walk
+import os
+import shutil
 
 # 1
 # Write a function list_files_walk that returns a list of the paths of all the 
@@ -24,14 +24,28 @@ def list_files_walk():
         paths | list:
             The paths of all the parts.txt files.
     """
+    #for dirpath in os.walk("CarItems"):
+    #    #if os.path.isfile(dirpath.split("/")[-1]):
+    #    print(str(dirpath))
+    paths = []
+    for dirpath, dirnames, filenames in os.walk("CarItems"):
+        for ifile in filenames:
+            if "parts" in ifile: # only add parts files
+                paths.append(os.path.join(dirpath, ifile))
+    return paths
 
+# Output the items in the list
+#print("\nList files using os.walk() function:")
+#parts_list = list_files_walk()
+#for i in range(len(parts_list)):
+#    print(parts_list[i])
         
 # 2
 # Write a function list_files_recursive that returns a list of the paths of all 
 # the parts.txt files without using the os module's walk generator. Instead, the 
 # function should use recursion. The input will be a directory name and the 
 # output should be the same as the output in Task #1 above.
-def list_files_recursive():
+def list_files_recursive(top_dir):
     """Returns a list of the paths of all the parts.txt files.
     
     This function returns a list of the paths of all the parts.txt files, using
@@ -43,17 +57,31 @@ def list_files_recursive():
     Returns:
         paths | list:
             The paths of all the parts.txt files.
-    
     """
-
+    dir_contents = os.listdir(top_dir)
+    paths = []
+    for item in dir_contents:
+        item_path = os.path.join(top_dir, item)
+        if os.path.isdir(item_path):
+            paths += list_files_recursive(item_path)
+        else:
+            if "parts" in item: # only add parts files
+                if os.path.splitext(item)[-1].lower() == '.txt':
+                    paths += [item_path]
+    return paths
+    
+# Output the items in the list
+#print("\nList files using recursive function:")
+#parts_list_recursive = list_files_recursive("CarItems")
+#for i in range(len(parts_list_recursive)):
+#    print(parts_list_recursive[i])
 
 # 3
 # Make calls to list_files_walk and list_files_recursive and compare whether the 
 # output is the same. Print to screen the result as to whether or not both calls 
 # return the same list.  (The result should be True.)
-# test
-print(list_files_walk())
-print(list_files_recursive())
+print("\nCalls to list_files_walk() and list_files_recursive() return the same" 
+    " list: " + str(list_files_walk() == list_files_recursive("CarItems")))
 
 # 4
 # Create a copy of the CarItems tree called CarItemsCopy where all files, 
@@ -63,3 +91,28 @@ print(list_files_recursive())
 # Do this using Python (you can't create the copy by manually rearranging 
 # things).  You may use the os module's walk generator. Hint: You might find the 
 # os.path module's split function to be helpful. You don't have to use it though.
+def copy_car_items():
+    shutil.copytree("CarItems", "CarItemsCopy")
+    for dirpath, dirnames, filenames in os.walk("CarItemsCopy"):
+        for ifile in filenames:
+            
+            # Full filepath
+            fullpath = os.path.join(dirpath, ifile)
+            pieces = os.path.split(fullpath)
+            
+            # Add the year to the filename
+            filename_with_year = os.path.splitext(pieces[1])[0] + "-" + \
+                os.path.split(pieces[0])[1] + \
+                os.path.splitext(pieces[1])[1]
+            
+            # New destination of the parts/accessories files (inside the model
+            # folder)
+            model_path = os.path.split(dirpath)[0]
+            
+            # Move the file to the model directory
+            shutil.move(os.path.join(dirpath, ifile), 
+                os.path.join(model_path, filename_with_year))
+            
+            if  'parts' not in os.listdir(dirpath) and \
+                'accessories' not in os.listdir(dirpath):
+                shutil.rmtree()
