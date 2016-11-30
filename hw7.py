@@ -15,7 +15,9 @@ import shutil
 def list_files_walk():
     """Returns a list of the paths of all the parts.txt files.
     
-    This function returns a list of the paths of all the parts.txt files.
+    This function returns a list of the paths of all the parts.txt files. Uses
+    the os module's walk generator. Only includes parts files, not accessories
+    files.
     
     Postitional Input Parameters:
         none
@@ -35,10 +37,10 @@ def list_files_walk():
     return paths
 
 # Output the items in the list
-#print("\nList files using os.walk() function:")
-#parts_list = list_files_walk()
-#for i in range(len(parts_list)):
-#    print(parts_list[i])
+print("\nList files using os.walk() function:")
+parts_list = list_files_walk()
+for i in range(len(parts_list)):
+    print(parts_list[i])
         
 # 2
 # Write a function list_files_recursive that returns a list of the paths of all 
@@ -49,7 +51,7 @@ def list_files_recursive(top_dir):
     """Returns a list of the paths of all the parts.txt files.
     
     This function returns a list of the paths of all the parts.txt files, using
-    recursion.
+    recursion. Only includes parts files, not accessories files.
     
     Postitional Input Parameters:
         none
@@ -66,15 +68,15 @@ def list_files_recursive(top_dir):
             paths += list_files_recursive(item_path)
         else:
             if "parts" in item: # only add parts files
-                if os.path.splitext(item)[-1].lower() == '.txt':
+                if os.path.splitext(item)[-1] == '.txt':
                     paths += [item_path]
     return paths
     
 # Output the items in the list
-#print("\nList files using recursive function:")
-#parts_list_recursive = list_files_recursive("CarItems")
-#for i in range(len(parts_list_recursive)):
-#    print(parts_list_recursive[i])
+print("\nList files using recursive function:")
+parts_list_recursive = list_files_recursive("CarItems")
+for i in range(len(parts_list_recursive)):
+    print(parts_list_recursive[i])
 
 # 3
 # Make calls to list_files_walk and list_files_recursive and compare whether the 
@@ -92,27 +94,31 @@ print("\nCalls to list_files_walk() and list_files_recursive() return the same"
 # things).  You may use the os module's walk generator. Hint: You might find the 
 # os.path module's split function to be helpful. You don't have to use it though.
 def copy_car_items():
-    shutil.copytree("CarItems", "CarItemsCopy")
-    for dirpath, dirnames, filenames in os.walk("CarItemsCopy"):
-        for ifile in filenames:
-            
-            # Full filepath
-            fullpath = os.path.join(dirpath, ifile)
-            pieces = os.path.split(fullpath)
-            
-            # Add the year to the filename
-            filename_with_year = os.path.splitext(pieces[1])[0] + "-" + \
-                os.path.split(pieces[0])[1] + \
-                os.path.splitext(pieces[1])[1]
-            
-            # New destination of the parts/accessories files (inside the model
-            # folder)
-            model_path = os.path.split(dirpath)[0]
-            
-            # Move the file to the model directory
-            shutil.move(os.path.join(dirpath, ifile), 
-                os.path.join(model_path, filename_with_year))
-            
-            if  'parts' not in os.listdir(dirpath) and \
-                'accessories' not in os.listdir(dirpath):
-                shutil.rmtree()
+    if not os.path.isdir("CarItemsCopy"): # Make sure dir doesn't exist already
+        shutil.copytree("CarItems", "CarItemsCopy")
+        for dirpath, dirnames, filenames in os.walk("CarItemsCopy"):
+            for ifile in filenames:
+                # Full filepath
+                fullpath = os.path.join(dirpath, ifile)
+                pieces = os.path.split(fullpath)
+                    
+                # Add the year to the filename
+                filename_with_year = os.path.splitext(pieces[1])[0] + "-" + \
+                    os.path.split(pieces[0])[1] + \
+                    os.path.splitext(pieces[1])[1]
+                
+                # New destination of the parts/accessories files (inside the model
+                # folder)
+                model_path = os.path.split(dirpath)[0]
+                
+                # Move the file to the model directory
+                shutil.move(os.path.join(dirpath, ifile), 
+                    os.path.join(model_path, filename_with_year))
+                
+                # Delete the empty year directory inside the model directory 
+                if  'parts.txt' not in os.listdir(dirpath) and \
+                    'accessories.txt' not in os.listdir(dirpath):
+                    shutil.rmtree(dirpath)
+                    
+# Create the CarItemsCopy directory tree
+copy_car_items()
